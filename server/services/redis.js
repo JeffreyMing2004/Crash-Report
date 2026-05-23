@@ -12,8 +12,10 @@ function getRedis() {
   if (redis) return redis;
 
   const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+  const redisPassword = process.env.REDIS_PASSWORD || undefined;
 
   redis = new Redis(redisUrl, {
+    password: redisPassword,
     maxRetriesPerRequest: 2,
     retryStrategy(times) {
       if (times > 3) {

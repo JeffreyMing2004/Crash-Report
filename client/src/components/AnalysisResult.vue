@@ -1,10 +1,11 @@
 <template>
   <div class="analysis-result">
+    <!-- 标题栏 -->
     <div class="result-header">
-      <h2><IconBarChart3 /> 分析结果</h2>
+      <h2 class="result-header-title"><IconBarChart3 /> 分析结果</h2>
       <div class="result-meta">
-        <span class="file-badge">{{ result.fileName }}</span>
-        <span class="time-badge">{{ formatTime(result.analyzedAt) }}</span>
+        <span class="badge badge-file">{{ result.fileName }}</span>
+        <span class="badge badge-time">{{ formatTime(result.analyzedAt) }}</span>
         <button class="close-btn" @click="emit('close')"><IconX /></button>
       </div>
     </div>
@@ -20,15 +21,15 @@
       </span>
     </div>
 
-    <!-- 概要 -->
-    <div class="result-card summary-card">
-      <h3><IconSearch /> 问题概要</h3>
-      <p>{{ result.analysis?.summary || '无' }}</p>
+    <!-- 问题概要 -->
+    <div class="card card-accent-green summary-card result-card-full">
+      <h3 class="card-heading"><IconSearch /> 问题概要</h3>
+      <p class="card-body">{{ result.analysis?.summary || '无' }}</p>
     </div>
 
-    <!-- 崩溃基本信息 -->
-    <div class="result-card info-card">
-      <h3><IconScrollText /> 崩溃信息</h3>
+    <!-- 崩溃信息 -->
+    <div class="card result-card-full">
+      <h3 class="card-heading"><IconScrollText /> 崩溃信息</h3>
       <div class="info-grid">
         <div v-if="result.parsed?.errorType" class="info-item">
           <span class="info-key">错误类型</span>
@@ -62,14 +63,14 @@
     </div>
 
     <!-- 根本原因 -->
-    <div class="result-card root-cause-card">
-      <h3><IconTarget /> 根本原因</h3>
-      <p>{{ result.analysis?.rootCause || '无' }}</p>
+    <div class="card card-accent-yellow result-card-full">
+      <h3 class="card-heading"><IconTarget /> 根本原因</h3>
+      <p class="card-body">{{ result.analysis?.rootCause || '无' }}</p>
     </div>
 
     <!-- 解决方案 -->
-    <div class="result-card solutions-card">
-      <h3><IconLightbulb /> 解决方案</h3>
+    <div class="card card-accent-green result-card-full solutions-card">
+      <h3 class="card-heading"><IconLightbulb /> 解决方案</h3>
       <ol v-if="result.analysis?.solutions?.length">
         <li v-for="(solution, i) in result.analysis.solutions" :key="i">
           {{ solution }}
@@ -79,35 +80,29 @@
     </div>
 
     <!-- 相关 Mod -->
-    <div v-if="result.analysis?.relatedMods?.length" class="result-card mods-card">
-      <h3><IconPuzzle /> 可能相关的 Mod</h3>
+    <div v-if="result.analysis?.relatedMods?.length" class="card result-card-full">
+      <h3 class="card-heading"><IconPuzzle /> 可能相关的 Mod</h3>
       <div class="mod-tags">
-        <span
-          v-for="mod in result.analysis.relatedMods"
-          :key="mod"
-          class="mod-tag"
-        >
-          {{ mod }}
-        </span>
+        <span v-for="mod in result.analysis.relatedMods" :key="mod" class="mod-tag">{{ mod }}</span>
       </div>
     </div>
 
     <!-- 技术细节 -->
-    <div v-if="result.analysis?.technicalDetails" class="result-card tech-card">
-      <h3><IconSettings /> 技术细节</h3>
-      <p>{{ result.analysis.technicalDetails }}</p>
+    <div v-if="result.analysis?.technicalDetails" class="card result-card-full">
+      <h3 class="card-heading"><IconSettings /> 技术细节</h3>
+      <p class="card-body">{{ result.analysis.technicalDetails }}</p>
     </div>
 
     <!-- 修复预估 -->
-    <div v-if="result.analysis?.estimatedFixTime" class="result-card">
-      <h3><IconClock /> 预估修复时间</h3>
+    <div v-if="result.analysis?.estimatedFixTime" class="card">
+      <h3 class="card-heading"><IconClock /> 预估修复时间</h3>
       <p class="fix-time">{{ result.analysis.estimatedFixTime }}</p>
     </div>
 
     <!-- 堆栈预览 -->
-    <div v-if="result.parsed?.stackTracePreview?.length" class="result-card stack-card">
-      <h3><IconScrollText /> 堆栈跟踪（前10行）</h3>
-      <pre class="stack-trace"><code>{{ result.parsed.stackTracePreview.join('\n') }}</code></pre>
+    <div v-if="result.parsed?.stackTracePreview?.length" class="card result-card-full stack-card">
+      <h3 class="card-heading"><IconScrollText /> 堆栈跟踪（前10行）</h3>
+      <pre><code>{{ result.parsed.stackTracePreview.join('\n') }}</code></pre>
     </div>
   </div>
 </template>
@@ -115,28 +110,19 @@
 <script setup>
 import {
   IconBarChart3, IconSearch, IconScrollText, IconTarget,
-  IconLightbulb, IconPuzzle, IconSettings, IconClock, IconX
+  IconLightbulb, IconPuzzle, IconSettings, IconClock, IconX,
 } from '../assets/icons.js';
 
-const props = defineProps({
-  result: Object,
-});
-
+defineProps({ result: Object });
 const emit = defineEmits(['close']);
 
 function formatTime(iso) {
   if (!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleString('zh-CN');
+  return new Date(iso).toLocaleString('zh-CN');
 }
 
 function severityLabel(severity) {
-  const map = {
-    critical: '严重',
-    high: '高',
-    medium: '中',
-    low: '低',
-  };
+  const map = { critical: '严重', high: '高', medium: '中', low: '低' };
   return map[severity] || '未知';
 }
 </script>

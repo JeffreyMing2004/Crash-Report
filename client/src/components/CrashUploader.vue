@@ -24,7 +24,7 @@
       </template>
       <template v-else>
         <div class="file-preview">
-          <div class="file-icon-display">
+          <div class="file-icon-box">
             <IconFileText />
           </div>
           <div class="file-info">

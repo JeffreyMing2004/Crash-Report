@@ -197,23 +197,100 @@ async function analyzeReport(parsedReport) {
     throw new Error('AI 分析返回空结果（当前模型可能为推理模型，内容在其他字段中）');
   }
 
-  // 对于推理模型，reasoning 中可能包含思考过程，
-  // 尝试提取最后的 JSON 块
-  const jsonMatch = rawContent.match(/\{[\s\S]*\}/g);
-  if (jsonMatch) {
-    // 取最后一个 JSON 块（推理模型的思考过程可能也包含 { } ）
-    const lastJson = jsonMatch[jsonMatch.length - 1];
+  // 打印前 500 字符用于调试（生产环境也能看到）
+  console.log('[AI Response] 原始返回前500字符:', rawContent.slice(0, 500));
+
+  // 1. 先去掉 markdown 代码块包裹
+  let cleanContent = rawContent;
+  const mdMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (mdMatch) {
+    cleanContent = mdMatch[1].trim();
+  }
+
+  // 2. 提取 JSON 块：从第一个 { 到最后一个 }
+  const firstBrace = cleanContent.indexOf('{');
+  const lastBrace = cleanContent.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    cleanContent = cleanContent.slice(firstBrace, lastBrace + 1);
+  }
+
+  // 3. 尝试直接解析
+  try {
+    return JSON.parse(cleanContent);
+  } catch (e1) {
+    console.warn('[AI Parse] 直接解析失败，尝试修复:', e1.message);
+  }
+
+  // 4. 尝试修复常见 JSON 问题：缺少逗号、截断的字符串等
+  try {
+    // 如果 JSON 被截断，尝试用空字符串补全缺失字段
+    const fixed = fixTruncatedJson(cleanContent);
+    if (fixed) {
+      console.log('[AI Parse] 截断修复后解析成功');
+      return fixed;
+    }
+  } catch {
+    // 继续尝试
+  }
+
+  // 5. 对于推理模型，尝试所有 JSON 块（思考过程中可能有多个 {}）
+  const allJsonBlocks = rawContent.match(/\{[\s\S]*?\}/g) || [];
+  for (let i = allJsonBlocks.length - 1; i >= 0; i--) {
     try {
-      return JSON.parse(lastJson);
+      const parsed = JSON.parse(allJsonBlocks[i]);
+      // 验证是否包含核心字段
+      if (parsed.summary || parsed.rootCause || parsed.severity) {
+        console.log(`[AI Parse] 从第 ${i + 1}/${allJsonBlocks.length} 个 JSON 块解析成功`);
+        return parsed;
+      }
     } catch {
-      // 继续尝试其他
+      // 继续尝试
+    }
+  }
+
+  // 6. 最终兜底：用 rawContent 作为 summary 返回基础结构
+  if (rawContent.length > 10) {
+    console.warn('[AI Parse] 所有解析尝试失败，使用兜底结构');
+    return {
+      summary: rawContent.slice(0, 500),
+      rootCause: 'AI 返回非标准 JSON 格式，请查看 summary 字段获取分析内容',
+      solutions: ['请重新分析，或手动查看原始报告'],
+      severity: 'medium',
+      estimatedFixTime: '未知',
+    };
+  }
+
+  throw new Error('AI 返回格式异常，无法解析为 JSON');
+}
+
+/**
+ * 尝试修复被截断或格式有误的 JSON
+ */
+function fixTruncatedJson(jsonStr) {
+  let fixed = jsonStr;
+
+  // 补全缺失的结尾引号 + }
+  if (!fixed.endsWith('}')) {
+    // 检查最后是否是不完整的字符串值
+    const lastQuote = fixed.lastIndexOf('"');
+    const lastColon = fixed.lastIndexOf(':');
+    if (lastColon > lastQuote) {
+      // 值部分被截断了
+      fixed = fixed.slice(0, lastColon + 1) + ' ""';
+    }
+    // 补全缺失的 }
+    let openBraces = (fixed.match(/\{/g) || []).length;
+    let closeBraces = (fixed.match(/\}/g) || []).length;
+    while (closeBraces < openBraces) {
+      fixed += '}';
+      closeBraces++;
     }
   }
 
   try {
-    return JSON.parse(rawContent);
+    return JSON.parse(fixed);
   } catch {
-    throw new Error('AI 返回格式异常，无法解析为 JSON');
+    return null;
   }
 }
 

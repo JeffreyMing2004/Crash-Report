@@ -14,13 +14,13 @@
         <div class="header-actions">
           <template v-if="user">
             <span class="user-badge"><IconUser /> {{ user.username }}</span>
-            <button class="auth-btn logout-btn" @click="handleLogout">
+            <button class="btn btn-ghost" @click="handleLogout">
               <IconLogOut /> 退出
             </button>
           </template>
           <template v-else>
-            <button class="auth-btn" @click="showRegister = false; showAuth = true">登录</button>
-            <button class="auth-btn primary" @click="showRegister = true; showAuth = true">注册</button>
+            <button class="btn" @click="showRegister = false; showAuth = true">登录</button>
+            <button class="btn btn-primary" @click="showRegister = true; showAuth = true">注册</button>
           </template>
         </div>
       </div>
@@ -29,7 +29,30 @@
       <router-view />
     </main>
     <footer class="app-footer">
-      <p>MC Crash Analyzer — 基于 AI 的智能崩溃诊断 &middot; 支持 Java 版所有版本</p>
+      <div class="footer-row">
+        <span>MC Crash Analyzer — 基于 AI 的智能崩溃诊断 &middot; 支持 Java 版所有版本</span>
+      </div>
+      <div class="footer-row footer-meta">
+        <span>作者：明明Uncle</span>
+        <span class="footer-divider">|</span>
+        <span>托管于：抚州明像素网络科技有限公司</span>
+        <span class="footer-divider">|</span>
+        <span>version:1.0.0</span>
+        <span class="footer-divider">|</span>
+        <a :href="ISSUES_URL" target="_blank" rel="noopener" class="footer-issues-link">
+          <IconBug /> 问题反馈
+        </a>
+        <a :href="ISSUES_URL" target="_blank" rel="noopener" class="footer-issues-link footer-issues-btn">
+          <IconExternalLink /> GitHub Issues
+        </a>
+      </div>
+      <div class="footer-row footer-beian">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="footer-beian-link">赣ICP备2025075011号-1</a>
+        <span class="footer-divider">|</span>
+        <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=36100202000667" target="_blank" rel="noopener" class="footer-beian-link">
+          赣公网安备36100202000667号
+        </a>
+      </div>
     </footer>
 
     <AuthModal
@@ -45,7 +68,9 @@
 import { ref, onMounted } from 'vue';
 import AuthModal from './components/AuthModal.vue';
 import { getMe, logout } from './api/index.js';
-import { IconAlertTriangle, IconUser, IconLogOut } from './assets/icons.js';
+import { IconAlertTriangle, IconUser, IconLogOut, IconBug, IconExternalLink } from './assets/icons.js';
+
+const ISSUES_URL = 'https://github.com/JeffreyMing2004/Crash-Report-Web/issues';
 
 const showAuth = ref(false);
 const showRegister = ref(false);

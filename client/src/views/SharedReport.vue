@@ -1,7 +1,7 @@
 <template>
   <div class="shared-report-page">
     <div v-if="loading" class="share-loading">
-      <div class="spinner"></div>
+      <div class="spinner-sm"></div>
       <p>加载中...</p>
     </div>
 
@@ -22,10 +22,10 @@
 
       <div class="analysis-result">
         <div class="result-header">
-          <h2><IconBarChart3 /> 分析结果</h2>
+          <h2 class="result-header-title"><IconBarChart3 /> 分析结果</h2>
           <div class="result-meta">
-            <span class="file-badge">{{ report.fileName }}</span>
-            <span class="time-badge">{{ formatTime(report.analyzedAt) }}</span>
+            <span class="badge badge-file">{{ report.fileName }}</span>
+            <span class="badge badge-time">{{ formatTime(report.analyzedAt) }}</span>
           </div>
         </div>
 
@@ -39,13 +39,13 @@
           </span>
         </div>
 
-        <div class="result-card summary-card">
-          <h3><IconSearch /> 问题概要</h3>
-          <p>{{ report.analysis?.summary || '无' }}</p>
+        <div class="card card-accent-green summary-card result-card-full">
+          <h3 class="card-heading"><IconSearch /> 问题概要</h3>
+          <p class="card-body">{{ report.analysis?.summary || '无' }}</p>
         </div>
 
-        <div class="result-card info-card">
-          <h3><IconScrollText /> 崩溃信息</h3>
+        <div class="card result-card-full">
+          <h3 class="card-heading"><IconScrollText /> 崩溃信息</h3>
           <div class="info-grid">
             <div v-if="report.parsed?.errorType" class="info-item">
               <span class="info-key">错误类型</span>
@@ -74,13 +74,13 @@
           </div>
         </div>
 
-        <div class="result-card root-cause-card">
-          <h3><IconTarget /> 根本原因</h3>
-          <p>{{ report.analysis?.rootCause || '无' }}</p>
+        <div class="card card-accent-yellow result-card-full">
+          <h3 class="card-heading"><IconTarget /> 根本原因</h3>
+          <p class="card-body">{{ report.analysis?.rootCause || '无' }}</p>
         </div>
 
-        <div class="result-card solutions-card">
-          <h3><IconLightbulb /> 解决方案</h3>
+        <div class="card card-accent-green result-card-full solutions-card">
+          <h3 class="card-heading"><IconLightbulb /> 解决方案</h3>
           <ol v-if="report.analysis?.solutions?.length">
             <li v-for="(solution, i) in report.analysis.solutions" :key="i">
               {{ solution }}
@@ -89,21 +89,21 @@
           <p v-else>暂无建议方案</p>
         </div>
 
-        <div v-if="report.analysis?.relatedMods?.length" class="result-card mods-card">
-          <h3><IconPuzzle /> 可能相关的 Mod</h3>
+        <div v-if="report.analysis?.relatedMods?.length" class="card result-card-full">
+          <h3 class="card-heading"><IconPuzzle /> 可能相关的 Mod</h3>
           <div class="mod-tags">
             <span v-for="mod in report.analysis.relatedMods" :key="mod" class="mod-tag">{{ mod }}</span>
           </div>
         </div>
 
-        <div v-if="report.analysis?.technicalDetails" class="result-card tech-card">
-          <h3><IconSettings /> 技术细节</h3>
-          <p>{{ report.analysis.technicalDetails }}</p>
+        <div v-if="report.analysis?.technicalDetails" class="card result-card-full">
+          <h3 class="card-heading"><IconSettings /> 技术细节</h3>
+          <p class="card-body">{{ report.analysis.technicalDetails }}</p>
         </div>
 
-        <div v-if="report.parsed?.stackTracePreview?.length" class="result-card stack-card">
-          <h3><IconScrollText /> 堆栈跟踪</h3>
-          <pre class="stack-trace"><code>{{ report.parsed.stackTracePreview.join('\n') }}</code></pre>
+        <div v-if="report.parsed?.stackTracePreview?.length" class="card result-card-full stack-card">
+          <h3 class="card-heading"><IconScrollText /> 堆栈跟踪</h3>
+          <pre><code>{{ report.parsed.stackTracePreview.join('\n') }}</code></pre>
         </div>
       </div>
 
@@ -155,26 +155,17 @@ function updateCountdown() {
 }
 
 onMounted(async () => {
-  const shareId = route.params.shareId;
-  console.log('[SharedReport] 开始加载分享:', shareId);
   try {
-    const res = await getSharedReport(shareId);
-    const data = res.data;
-    console.log('[SharedReport] API 返回:', { hasError: !!data.error, hasReport: !!data.report, ttl: data.ttl });
+    const { data } = await getSharedReport(route.params.shareId);
     if (data.error) {
       error.value = data.error;
-    } else if (data.report) {
+    } else {
       report.value = data.report;
       ttlSeconds = data.ttl > 0 ? data.ttl : 0;
       updateCountdown();
       timer = setInterval(updateCountdown, 1000);
-      console.log('[SharedReport] 报告加载成功, report:', report.value);
-    } else {
-      console.warn('[SharedReport] data.report 为空, data:', data);
-      error.value = '报告数据不存在';
     }
-  } catch (err) {
-    console.error('[SharedReport] 请求失败:', err);
+  } catch {
     error.value = '分享链接不存在或已过期';
   } finally {
     loading.value = false;

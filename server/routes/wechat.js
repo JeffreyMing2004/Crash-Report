@@ -20,7 +20,7 @@ const router = express.Router();
 
 const WECHAT_APP_ID = process.env.WECHAT_APP_ID || '';
 const WECHAT_APP_SECRET = process.env.WECHAT_APP_SECRET || '';
-const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
+const SITE_URL = process.env.SITE_URL || 'http://localhost:3003';
 const SESSION_TTL = 30 * 60; // 30分钟
 const COOKIE_MAX_AGE = 30 * 60 * 1000;
 const POLL_TIMEOUT = 5 * 60; // 二维码有效期 5 分钟

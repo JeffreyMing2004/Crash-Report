@@ -79,6 +79,14 @@ import AnalysisResult from '../components/AnalysisResult.vue';
 import HistoryList from '../components/HistoryList.vue';
 import { analyzeFile, analyzeText, getHistory, getHistoryDetail, deleteHistory, createShare } from '../api/index.js';
 
+const ISSUES_URL = 'https://github.com/JeffreyMing2004/Crash-Report-Web/issues';
+
+function showErrorAndOfferIssue(message) {
+  const msg = `操作失败：${message}\n\n如果该问题持续出现，请通过 GitHub Issues 反馈：\n${ISSUES_URL}`;
+  const go = confirm(`${msg}\n\n是否前往 GitHub Issues 页面？`);
+  if (go) window.open(ISSUES_URL, '_blank');
+}
+
 const activeTab = ref('upload');
 const loading = ref(false);
 const pastedText = ref('');
@@ -126,7 +134,7 @@ async function handleAnalysis(file) {
     const { data } = await analyzeFile(file);
     await finishAnalysis(data);
   } catch (err) {
-    alert('分析失败：' + (err.response?.data?.error || err.message));
+    showErrorAndOfferIssue(err.response?.data?.error || err.message);
     if (newWindow.value) { newWindow.value.close(); newWindow.value = null; }
   } finally {
     loading.value = false;
@@ -153,7 +161,7 @@ async function handleTextSubmit() {
     pastedText.value = '';
     await finishAnalysis(data);
   } catch (err) {
-    alert('分析失败：' + (err.response?.data?.error || err.message));
+    showErrorAndOfferIssue(err.response?.data?.error || err.message);
     if (newWindow.value) { newWindow.value.close(); newWindow.value = null; }
   } finally {
     loading.value = false;

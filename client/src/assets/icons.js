@@ -139,3 +139,19 @@ export const IconBot = icon([
   'M8 16h.01',
   'M16 16h.01',
 ]);
+export const IconBug = icon([
+  'M8 2l1.88 1.88',
+  'M14.12 3.88L16 2',
+  'M9 7.13v-1a3.003 3.003 0 1 1 6 0v1',
+  'M12 20a5 5 0 0 0 5-5v-3a5 5 0 0 0-10 0v3a5 5 0 0 0 5 5z',
+  'M3 13h2',
+  'M19 13h2',
+  'M12 20v-6',
+  'M5 8h.01',
+  'M19 8h.01',
+]);
+export const IconExternalLink = icon([
+  'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6',
+  'M15 3h6v6',
+  'M10 14 21 3',
+]);
