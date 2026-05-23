@@ -3,6 +3,7 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: '/api',
   timeout: 120000, // AI 分析可能需要较长时间
+  withCredentials: true, // 携带 Cookie
 });
 
 /**
@@ -49,6 +50,34 @@ export function deleteHistory(id) {
  */
 export function healthCheck() {
   return api.get('/analyze/health');
+}
+
+/**
+ * 用户注册
+ */
+export function register(username, password) {
+  return api.post('/auth/register', { username, password });
+}
+
+/**
+ * 用户登录
+ */
+export function login(username, password) {
+  return api.post('/auth/login', { username, password });
+}
+
+/**
+ * 用户登出
+ */
+export function logout() {
+  return api.post('/auth/logout');
+}
+
+/**
+ * 获取当前用户
+ */
+export function getMe() {
+  return api.get('/auth/me');
 }
 
 export default api;

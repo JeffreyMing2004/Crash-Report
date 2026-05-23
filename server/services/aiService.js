@@ -9,6 +9,8 @@ function createClient() {
   const config = {
     apiKey: process.env.OPENAI_API_KEY || 'sk-placeholder',
     baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+    timeout: 120000, // 120秒超时
+    maxRetries: 1,
   };
   return new OpenAI(config);
 }
@@ -102,24 +104,38 @@ async function analyzeReport(parsedReport) {
       { role: 'user', content: buildUserPrompt(parsedReport) },
     ],
     temperature: 0.3,
-    max_tokens: 2000,
-    response_format: { type: 'json_object' },
+    max_tokens: 4096,
   });
 
-  const content = response.choices[0]?.message?.content;
-  if (!content) {
-    throw new Error('AI 分析返回空结果');
+  const message = response.choices[0]?.message || {};
+
+  // 兼容多种模型响应格式
+  // 普通模型: message.content
+  // 推理模型(DeepSeek-R1风格): message.reasoning_content + message.content
+  // 部分推理模型: message.reasoning
+  let rawContent = message.content || message.reasoning_content || message.reasoning || '';
+
+  if (!rawContent) {
+    throw new Error('AI 分析返回空结果（当前模型可能为推理模型，内容在其他字段中）');
+  }
+
+  // 对于推理模型，reasoning 中可能包含思考过程，
+  // 尝试提取最后的 JSON 块
+  const jsonMatch = rawContent.match(/\{[\s\S]*\}/g);
+  if (jsonMatch) {
+    // 取最后一个 JSON 块（推理模型的思考过程可能也包含 { } ）
+    const lastJson = jsonMatch[jsonMatch.length - 1];
+    try {
+      return JSON.parse(lastJson);
+    } catch {
+      // 继续尝试其他
+    }
   }
 
   try {
-    return JSON.parse(content);
+    return JSON.parse(rawContent);
   } catch {
-    // 如果 JSON 解析失败，尝试提取 JSON
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    }
-    throw new Error('AI 返回格式异常，无法解析');
+    throw new Error('AI 返回格式异常，无法解析为 JSON');
   }
 }
 

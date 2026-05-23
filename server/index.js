@@ -2,14 +2,20 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const analyzeRouter = require('./routes/analyze');
+const authRouter = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 中间件
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' ? false : 'http://localhost:5173',
+  credentials: true,
+}));
+app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -20,6 +26,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // API 路由
 app.use('/api/analyze', analyzeRouter);
+app.use('/api/auth', authRouter);
 
 // 生产环境 SPA fallback
 if (process.env.NODE_ENV === 'production') {
