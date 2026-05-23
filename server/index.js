@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const analyzeRouter = require('./routes/analyze');
 const authRouter = require('./routes/auth');
+const wechatRouter = require('./routes/wechat');
+const shareRouter = require('./routes/share');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +29,8 @@ if (process.env.NODE_ENV === 'production') {
 // API 路由
 app.use('/api/analyze', analyzeRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/auth/wechat', wechatRouter);
+app.use('/api/crash', shareRouter); // 分享报告公开接口
 
 // 生产环境 SPA fallback
 if (process.env.NODE_ENV === 'production') {

@@ -1,7 +1,7 @@
 <template>
   <div v-if="visible" class="modal-overlay" @click.self="close">
     <div class="modal-card">
-      <button class="modal-close" @click="close">✕</button>
+      <button class="modal-close" @click="close"><IconX /></button>
 
       <h2 class="modal-title">{{ isLogin ? '登录' : '注册' }}</h2>
 
@@ -34,7 +34,10 @@
 
         <button type="submit" class="modal-submit" :disabled="loading">
           <span v-if="loading" class="spinner"></span>
-          {{ loading ? '请稍候...' : (isLogin ? '登录' : '注册') }}
+          <template v-else>
+            <IconLogIn v-if="isLogin" />
+            {{ loading ? '请稍候...' : (isLogin ? '登录' : '注册') }}
+          </template>
         </button>
       </form>
 
@@ -49,6 +52,7 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { login, register } from '../api/index.js';
+import { IconX, IconLogIn } from '../assets/icons.js';
 
 const props = defineProps({
   visible: Boolean,

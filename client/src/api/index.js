@@ -80,4 +80,32 @@ export function getMe() {
   return api.get('/auth/me');
 }
 
+/**
+ * 获取微信扫码登录二维码
+ */
+export function getWechatQrcode() {
+  return api.get('/auth/wechat/qrcode');
+}
+
+/**
+ * 轮询微信扫码状态
+ */
+export function pollWechatStatus(state) {
+  return api.get('/auth/wechat/status', { params: { state } });
+}
+
+/**
+ * 创建分享链接
+ */
+export function createShare(reportId, reportData) {
+  return api.post(`/analyze/share/${reportId}`, { reportData });
+}
+
+/**
+ * 获取分享的报告（公开接口）
+ */
+export function getSharedReport(shareId) {
+  return api.get(`/crash/${shareId}`);
+}
+
 export default api;

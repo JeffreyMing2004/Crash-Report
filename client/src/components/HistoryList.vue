@@ -1,9 +1,9 @@
 <template>
   <div class="history-list">
     <div class="history-header">
-      <h3>📚 历史分析记录</h3>
+      <h3><IconBookOpen /> 历史分析记录</h3>
       <button class="refresh-btn" @click="emit('refresh')" :disabled="loading">
-        🔄 刷新
+        <IconRefreshCw /> 刷新
       </button>
     </div>
 
@@ -13,7 +13,7 @@
 
     <div v-else-if="items.length === 0" class="history-empty">
       <p>暂无分析记录</p>
-      <p class="empty-hint">上传或粘贴一份崩溃报告开始分析吧！</p>
+      <p class="empty-hint">上传或粘贴一份崩溃报告开始分析吧</p>
     </div>
 
     <div v-else class="history-items">
@@ -33,7 +33,7 @@
         <div class="item-right">
           <span class="item-time">{{ formatTime(item.analyzedAt) }}</span>
           <button class="delete-btn" @click.stop="emit('delete', item.id)" title="删除">
-            🗑️
+            <IconTrash2 />
           </button>
         </div>
       </div>
@@ -42,6 +42,8 @@
 </template>
 
 <script setup>
+import { IconBookOpen, IconRefreshCw, IconTrash2 } from '../assets/icons.js';
+
 const props = defineProps({
   items: Array,
   loading: Boolean,

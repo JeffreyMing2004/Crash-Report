@@ -16,18 +16,24 @@
         @change="handleFileSelect"
       />
       <template v-if="!fileName">
-        <div class="drop-icon">📂</div>
+        <div class="drop-icon">
+          <IconFolderOpen />
+        </div>
         <p class="drop-text">拖拽崩溃报告文件到此处</p>
         <p class="drop-hint">或点击选择文件（支持 .txt, .log 及无扩展名文件）</p>
       </template>
       <template v-else>
         <div class="file-preview">
-          <span class="file-icon">📄</span>
+          <div class="file-icon-display">
+            <IconFileText />
+          </div>
           <div class="file-info">
             <p class="file-name">{{ fileName }}</p>
             <p class="file-size">{{ formatSize(fileSize) }}</p>
           </div>
-          <button class="remove-btn" @click.stop="clearFile">✕</button>
+          <button class="remove-btn" @click.stop="clearFile">
+            <IconX />
+          </button>
         </div>
       </template>
     </div>
@@ -38,13 +44,15 @@
       @click="startAnalysis"
     >
       <span v-if="loading" class="spinner"></span>
-      {{ loading ? '分析中...' : '🤖 开始 AI 分析' }}
+      <IconSparkles v-else />
+      {{ loading ? '分析中...' : '开始 AI 分析' }}
     </button>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import { IconFolderOpen, IconFileText, IconX, IconSparkles } from '../assets/icons.js';
 
 const props = defineProps({
   loading: Boolean,

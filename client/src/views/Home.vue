@@ -20,7 +20,7 @@
       <CrashUploader
         v-if="activeTab === 'upload'"
         :loading="loading"
-        @analyze="handleFileAnalysis"
+        @analyze="handleAnalysis"
       />
       <div v-else class="paste-area">
         <textarea
@@ -33,10 +33,10 @@
         <button
           class="analyze-btn"
           :disabled="loading || !pastedText.trim()"
-          @click="handleTextAnalysis"
+          @click="handleTextSubmit"
         >
           <span v-if="loading" class="spinner"></span>
-          {{ loading ? '分析中...' : '🤖 开始 AI 分析' }}
+          🤖 {{ loading ? '分析中...' : '开始 AI 分析' }}
         </button>
       </div>
     </section>
@@ -51,7 +51,7 @@
       <HistoryList
         :items="history"
         :loading="historyLoading"
-        @view="viewHistoryDetail"
+        @view="openInNewWindow"
         @delete="handleDelete"
         @refresh="fetchHistory"
       />
@@ -66,7 +66,7 @@
           <div class="block"></div>
         </div>
         <p>AI 正在分析崩溃报告中...</p>
-        <p class="loading-hint">这可能需要几秒钟</p>
+        <p class="loading-hint">完成后将自动打开结果窗口</p>
       </div>
     </div>
   </div>
@@ -77,7 +77,7 @@ import { ref, onMounted } from 'vue';
 import CrashUploader from '../components/CrashUploader.vue';
 import AnalysisResult from '../components/AnalysisResult.vue';
 import HistoryList from '../components/HistoryList.vue';
-import { analyzeFile, analyzeText, getHistory, getHistoryDetail, deleteHistory } from '../api/index.js';
+import { analyzeFile, analyzeText, getHistory, getHistoryDetail, deleteHistory, createShare } from '../api/index.js';
 
 const activeTab = ref('upload');
 const loading = ref(false);
@@ -85,30 +85,76 @@ const pastedText = ref('');
 const currentResult = ref(null);
 const history = ref([]);
 const historyLoading = ref(false);
+const newWindow = ref(null); // 新窗口引用
 
-async function handleFileAnalysis(file) {
+/**
+ * 分析完成后：生成分享链接 → 填入已打开的新窗口
+ */
+async function finishAnalysis(result) {
+  currentResult.value = result;
+  await fetchHistory();
+
+  try {
+    const { data: shareData } = await createShare(result.id, result);
+    if (newWindow.value && !newWindow.value.closed) {
+      newWindow.value.location.href = shareData.shareUrl;
+    } else {
+      // 如果窗口被拦截或已关闭，在当前页显示链接
+      currentResult.value._shareUrl = shareData.shareUrl;
+    }
+  } catch {
+    // 分享失败静默处理
+  }
+  newWindow.value = null;
+}
+
+async function handleAnalysis(file) {
+  // 立即开空白窗口（必须在用户点击上下文中）
+  newWindow.value = window.open('', '_blank');
+  if (newWindow.value) {
+    newWindow.value.document.write(`
+      <html><head><meta charset="utf-8"><title>分析中...</title>
+      <style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#0f172a;color:#e2e8f0;}
+      .box{text-align:center}.spinner{width:40px;height:40px;border:3px solid #334155;border-top-color:#6366f1;border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+      @keyframes spin{to{transform:rotate(360deg)}}</style></head>
+      <body><div class="box"><div class="spinner"></div><p>正在分析崩溃报告...</p></div></body></html>
+    `);
+  }
+
   loading.value = true;
   try {
     const { data } = await analyzeFile(file);
-    currentResult.value = data;
-    await fetchHistory();
+    await finishAnalysis(data);
   } catch (err) {
     alert('分析失败：' + (err.response?.data?.error || err.message));
+    if (newWindow.value) { newWindow.value.close(); newWindow.value = null; }
   } finally {
     loading.value = false;
   }
 }
 
-async function handleTextAnalysis() {
+async function handleTextSubmit() {
   if (!pastedText.value.trim()) return;
+
+  newWindow.value = window.open('', '_blank');
+  if (newWindow.value) {
+    newWindow.value.document.write(`
+      <html><head><meta charset="utf-8"><title>分析中...</title>
+      <style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#0f172a;color:#e2e8f0;}
+      .box{text-align:center}.spinner{width:40px;height:40px;border:3px solid #334155;border-top-color:#6366f1;border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+      @keyframes spin{to{transform:rotate(360deg)}}</style></head>
+      <body><div class="box"><div class="spinner"></div><p>正在分析崩溃报告...</p></div></body></html>
+    `);
+  }
+
   loading.value = true;
   try {
     const { data } = await analyzeText(pastedText.value);
-    currentResult.value = data;
     pastedText.value = '';
-    await fetchHistory();
+    await finishAnalysis(data);
   } catch (err) {
     alert('分析失败：' + (err.response?.data?.error || err.message));
+    if (newWindow.value) { newWindow.value.close(); newWindow.value = null; }
   } finally {
     loading.value = false;
   }
@@ -120,18 +166,25 @@ async function fetchHistory() {
     const { data } = await getHistory();
     history.value = data;
   } catch {
-    // 静默失败
+    // 静默
   } finally {
     historyLoading.value = false;
   }
 }
 
-async function viewHistoryDetail(id) {
+async function openInNewWindow(id) {
+  const win = window.open('', '_blank');
   try {
     const { data } = await getHistoryDetail(id);
-    currentResult.value = data;
+    const { data: shareData } = await createShare(data.id, data);
+    if (win) {
+      win.location.href = shareData.shareUrl;
+    } else {
+      window.location.href = shareData.shareUrl;
+    }
   } catch {
-    alert('获取详情失败');
+    if (win) win.close();
+    alert('打开失败');
   }
 }
 
