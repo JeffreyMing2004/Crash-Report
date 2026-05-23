@@ -182,7 +182,7 @@ async function analyzeReport(parsedReport) {
       { role: 'user', content: buildUserPrompt(parsedReport) },
     ],
     temperature: 0.3,
-    max_tokens: 4096,
+    max_tokens: 8192,
   });
 
   const message = response.choices[0]?.message || {};
@@ -200,11 +200,25 @@ async function analyzeReport(parsedReport) {
   // 打印前 500 字符用于调试（生产环境也能看到）
   console.log('[AI Response] 原始返回前500字符:', rawContent.slice(0, 500));
 
-  // 1. 先去掉 markdown 代码块包裹
+  // 1. 去掉模型可能输出的多余前缀文字（"问题概要"等），定位 JSON 起点
   let cleanContent = rawContent;
+
+  // 先处理 markdown 代码块
   const mdMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (mdMatch) {
     cleanContent = mdMatch[1].trim();
+  } else {
+    // 没有闭合的 ```，但有开头的 ```  → 取 ``` 之后的内容
+    const openMd = rawContent.match(/```(?:json)?\s*([\s\S]*)/);
+    if (openMd) {
+      cleanContent = openMd[1].trim();
+    } else {
+      // 连 ``` 都没有 → 从第一个 { 开始丢弃前面的中文文字
+      const firstBraceIdx = rawContent.indexOf('{');
+      if (firstBraceIdx > 0) {
+        cleanContent = rawContent.slice(firstBraceIdx);
+      }
+    }
   }
 
   // 2. 提取 JSON 块：从第一个 { 到最后一个 }
@@ -213,6 +227,8 @@ async function analyzeReport(parsedReport) {
   if (firstBrace !== -1 && lastBrace > firstBrace) {
     cleanContent = cleanContent.slice(firstBrace, lastBrace + 1);
   }
+
+  console.log('[AI Parse] 清洗后内容前200字符:', cleanContent.slice(0, 200));
 
   // 3. 尝试直接解析
   try {
@@ -267,24 +283,34 @@ async function analyzeReport(parsedReport) {
  * 尝试修复被截断或格式有误的 JSON
  */
 function fixTruncatedJson(jsonStr) {
-  let fixed = jsonStr;
+  let fixed = jsonStr.trim();
 
-  // 补全缺失的结尾引号 + }
+  // 如果末尾不是 }，逐步截掉最后不完整的部分再补 }
   if (!fixed.endsWith('}')) {
-    // 检查最后是否是不完整的字符串值
+    // 先尝试：找到一个自然断点（最后一个引号之后）补全
     const lastQuote = fixed.lastIndexOf('"');
     const lastColon = fixed.lastIndexOf(':');
-    if (lastColon > lastQuote) {
-      // 值部分被截断了
+    const lastComma = fixed.lastIndexOf(',');
+    const lastBracket = fixed.lastIndexOf('[');
+    const lastCloseBracket = fixed.lastIndexOf(']');
+
+    // 字符串值被截断 → 补引号
+    if (lastColon > lastQuote && lastColon > lastComma) {
       fixed = fixed.slice(0, lastColon + 1) + ' ""';
     }
-    // 补全缺失的 }
+    // 数组元素被截断 → 回退到上一个 , 处
+    else if (lastComma > lastCloseBracket && lastBracket > lastCloseBracket) {
+      fixed = fixed.slice(0, lastComma);
+    }
+
+    // 补全缺失的 } 和 ]
     let openBraces = (fixed.match(/\{/g) || []).length;
     let closeBraces = (fixed.match(/\}/g) || []).length;
-    while (closeBraces < openBraces) {
-      fixed += '}';
-      closeBraces++;
-    }
+    let openBrackets = (fixed.match(/\[/g) || []).length;
+    let closeBrackets = (fixed.match(/\]/g) || []).length;
+
+    while (closeBrackets < openBrackets) { fixed += ']'; closeBrackets++; }
+    while (closeBraces < openBraces) { fixed += '}'; closeBraces++; }
   }
 
   try {
