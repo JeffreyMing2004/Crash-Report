@@ -262,10 +262,13 @@ router.post('/share/:id', async (req, res) => {
       SHARE_TTL
     );
 
-    const baseUrl = process.env.NODE_ENV === 'production'
-      ? (process.env.SITE_URL || '')
-      : 'http://localhost:5173';
+    // SITE_URL 必须配置，用于生成正确的分享链接
+    const baseUrl = process.env.SITE_URL || 'http://localhost:5173';
+    if (!process.env.SITE_URL) {
+      console.warn('⚠️  未配置 SITE_URL，分享链接将使用默认地址');
+    }
     const shareUrl = `${baseUrl}/crash/${shareId}`;
+    console.log(`🔗 生成分享链接: ${shareUrl}  (SITE_URL=${process.env.SITE_URL || '未配置'})`);
 
     res.json({
       shareId,
