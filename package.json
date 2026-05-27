@@ -12,8 +12,5 @@
   },
   "keywords": ["minecraft", "crash", "analyzer", "ai"],
   "author": "明明Uncle",
-  "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  }
+  "license": "MIT"
 }
