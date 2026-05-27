@@ -4,7 +4,7 @@
   "description": "AI-powered Minecraft Crash Report Analyzer",
   "private": true,
   "scripts": {
-    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix \"[{name}]\" --prefix-colors \"blue,cyan\" \"cd server && npm run dev\" \"cd client && npm run dev\"",
+    "dev": "node scripts/dev-runner.js",
     "dev:backend": "cd server && npm run dev",
     "dev:frontend": "cd client && npm run dev",
     "build": "cd client && npm run build",

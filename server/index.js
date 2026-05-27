@@ -49,8 +49,8 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`\n🔧 Minecraft 崩溃分析服务已启动`);
-  console.log(`📍 地址: http://localhost:${PORT}`);
-  console.log(`🤖 AI 模型: ${process.env.AI_MODEL || 'gpt-4o-mini'}`);
-  console.log(`🔗 API: http://localhost:${PORT}/api/analyze\n`);
+  console.log(`\nMinecraft Crash Analyzer Server Started`);
+  console.log(`Address: http://localhost:${PORT}`);
+  console.log(`AI Model: ${process.env.AI_MODEL || 'gpt-4o-mini'}`);
+  console.log(`API: http://localhost:${PORT}/api/analyze\n`);
 });
