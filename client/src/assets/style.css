@@ -40,58 +40,48 @@
   --font-body:    'DM Sans', system-ui, -apple-system, sans-serif;
   --font-mono:    'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
 
-  /* Type Scale */
-  --text-xs:   0.75rem;   /* 12px */
-  --text-sm:   0.8125rem; /* 13px */
-  --text-base: 0.875rem;  /* 14px */
-  --text-md:   0.9375rem; /* 15px */
-  --text-lg:   1rem;      /* 16px */
-  --text-xl:   1.125rem;  /* 18px */
-  --text-2xl:  1.25rem;   /* 20px */
-  --text-3xl:  1.5rem;    /* 24px */
-  --text-4xl:  1.75rem;   /* 28px */
-  --text-5xl:  2rem;      /* 32px */
+  --text-xs:   0.75rem;
+  --text-sm:   0.8125rem;
+  --text-base: 0.875rem;
+  --text-md:   0.9375rem;
+  --text-lg:   1rem;
+  --text-xl:   1.125rem;
+  --text-2xl:  1.25rem;
+  --text-3xl:  1.5rem;
+  --text-4xl:  1.75rem;
+  --text-5xl:  2rem;
 
-  /* ---- Spacing — based on 4px grid ---- */
-  --space-1:   0.25rem;   /* 4px  */
-  --space-2:   0.5rem;    /* 8px  */
-  --space-3:   0.75rem;   /* 12px */
-  --space-4:   1rem;      /* 16px */
-  --space-5:   1.25rem;   /* 20px */
-  --space-6:   1.5rem;    /* 24px */
-  --space-7:   1.75rem;   /* 28px */
-  --space-8:   2rem;      /* 32px */
-  --space-10:  2.5rem;    /* 40px */
-  --space-12:  3rem;      /* 48px */
-  --space-14:  3.5rem;    /* 56px */
+  --space-1:   0.25rem;
+  --space-2:   0.5rem;
+  --space-3:   0.75rem;
+  --space-4:   1rem;
+  --space-5:   1.25rem;
+  --space-6:   1.5rem;
+  --space-7:   1.75rem;
+  --space-8:   2rem;
+  --space-10:  2.5rem;
+  --space-12:  3rem;
+  --space-14:  3.5rem;
 
-  /* ---- Border Radius ---- */
   --radius-xs:  6px;
   --radius-sm:  10px;
   --radius-md:  14px;
   --radius-lg:  20px;
   --radius-full: 9999px;
 
-  /* ---- Shadows ---- */
   --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md:    0 4px 6px rgba(0, 0, 0, 0.5);
   --shadow-lg:    0 8px 24px rgba(0, 0, 0, 0.6);
   --shadow-glow:  0 0 24px var(--color-accent-glow);
 
-  /* ---- Transitions ---- */
   --transition-fast:   150ms ease;
   --transition-normal: 200ms ease;
   --transition-slow:   300ms ease;
 
-  /* ---- Layout ---- */
   --max-width:     960px;
   --header-height: 72px;
   --section-gap:   var(--space-12);
 }
-
-/* ================================================================
-   2. RESET & BASE
-   ================================================================ */
 
 *,
 *::before,
@@ -129,8 +119,7 @@ body {
   }
 }
 
-/* ---- Scrollbar ---- */
-::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-border-light); }
@@ -140,17 +129,12 @@ body {
   color: var(--color-bg-deep);
 }
 
-/* ================================================================
-   3. LAYOUT — App Shell
-   ================================================================ */
-
 .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* ---- Header ---- */
 .app-header {
   position: sticky;
   top: 0;
@@ -175,12 +159,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  min-width: 0;
 }
 
 .logo-icon {
@@ -206,6 +192,7 @@ body {
   font-weight: 700;
   letter-spacing: -0.5px;
   color: var(--color-text);
+  min-width: 0;
 }
 
 .header-subtitle {
@@ -214,12 +201,13 @@ body {
   padding-left: 50px;
 }
 
-/* ---- Header Actions ---- */
 .header-actions {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .user-badge {
@@ -235,6 +223,7 @@ body {
   align-items: center;
   gap: 6px;
   cursor: default;
+  max-width: 100%;
 }
 
 .user-badge svg {
@@ -243,7 +232,6 @@ body {
   color: var(--color-accent);
 }
 
-/* ---- Buttons ---- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -290,7 +278,6 @@ body {
   height: 14px;
 }
 
-/* ---- Main Content ---- */
 .app-main {
   flex: 1;
   max-width: var(--max-width);
@@ -299,7 +286,6 @@ body {
   padding: var(--space-10) var(--space-7);
 }
 
-/* ---- Footer ---- */
 .app-footer {
   padding: var(--space-6) 0;
   border-top: 1px solid var(--color-border);
@@ -313,6 +299,7 @@ body {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
   line-height: 1.8;
+  word-break: break-word;
 }
 
 .footer-row:first-child {
@@ -378,24 +365,18 @@ body {
   color: var(--color-accent);
 }
 
-/* ================================================================
-   4. HOME PAGE
-   ================================================================ */
-
 .home {
   display: flex;
   flex-direction: column;
   gap: var(--section-gap);
 }
 
-/* ---- Input Section ---- */
 .input-section {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
 }
 
-/* ---- Tab Bar ---- */
 .tab-bar {
   display: flex;
   gap: 4px;
@@ -439,10 +420,6 @@ body {
   color: var(--color-bg-deep);
   font-weight: 600;
 }
-
-/* ================================================================
-   5. CRASH UPLOADER
-   ================================================================ */
 
 .crash-uploader {
   display: flex;
@@ -525,7 +502,6 @@ body {
   z-index: 1;
 }
 
-/* ---- File Preview ---- */
 .file-preview {
   display: flex;
   align-items: center;
@@ -598,7 +574,6 @@ body {
   background: var(--color-danger-soft);
 }
 
-/* ---- Paste Area ---- */
 .paste-area {
   display: flex;
   flex-direction: column;
@@ -628,7 +603,6 @@ body {
   color: var(--color-text-muted);
 }
 
-/* ---- Analyze CTA Button ---- */
 .analyze-btn {
   padding: var(--space-4) var(--space-8);
   border: none;
@@ -662,10 +636,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ================================================================
-   6. SPINNER & LOADING
-   ================================================================ */
-
 .spinner {
   width: 20px;
   height: 20px;
@@ -689,7 +659,6 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* ---- Loading Overlay ---- */
 .loading-overlay {
   position: fixed;
   inset: 0;
@@ -701,10 +670,12 @@ body {
   justify-content: center;
   z-index: 1000;
   animation: fadeIn var(--transition-fast);
+  padding: var(--space-4);
 }
 
 .loading-content {
   text-align: center;
+  max-width: 320px;
 }
 
 .loading-content p {
@@ -742,12 +713,8 @@ body {
 
 @keyframes blockBounce {
   0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
-  40%            { transform: scale(1); opacity: 1; }
+  40% { transform: scale(1); opacity: 1; }
 }
-
-/* ================================================================
-   7. CARD — Unified base for all cards
-   ================================================================ */
 
 .card {
   background: var(--color-bg-card);
@@ -786,13 +753,8 @@ body {
   line-height: 1.7;
 }
 
-/* Card accent borders */
-.card-accent-green  { border-left: 3px solid var(--color-accent); }
+.card-accent-green { border-left: 3px solid var(--color-accent); }
 .card-accent-yellow { border-left: 3px solid var(--color-warning); }
-
-/* ================================================================
-   8. ANALYSIS RESULT — Bento Grid
-   ================================================================ */
 
 .analysis-result {
   display: grid;
@@ -803,15 +765,14 @@ body {
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to   { opacity: 1; }
+  to { opacity: 1; }
 }
 
-/* ---- Result Header ---- */
 .result-header {
   grid-column: 1 / -1;
   display: flex;
@@ -828,6 +789,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  min-width: 0;
 }
 
 .result-header-title svg {
@@ -840,6 +802,8 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .badge {
@@ -848,6 +812,7 @@ body {
   font-size: var(--text-xs);
   font-weight: 500;
   font-family: var(--font-mono);
+  max-width: 100%;
 }
 
 .badge-file {
@@ -887,7 +852,6 @@ body {
   border-color: var(--color-border-light);
 }
 
-/* ---- Severity Row ---- */
 .severity-row {
   grid-column: 1 / -1;
   display: flex;
@@ -909,10 +873,10 @@ body {
   font-weight: 600;
 }
 
-.severity-badge.critical { background: rgba(239,68,68,0.15);  color: #F87171; }
-.severity-badge.high     { background: rgba(249,115,22,0.15); color: #FB923C; }
-.severity-badge.medium   { background: rgba(245,158,11,0.15); color: #FBBF24; }
-.severity-badge.low      { background: rgba(16,185,129,0.15); color: #34D399; }
+.severity-badge.critical { background: rgba(239,68,68,0.15); color: #F87171; }
+.severity-badge.high { background: rgba(249,115,22,0.15); color: #FB923C; }
+.severity-badge.medium { background: rgba(245,158,11,0.15); color: #FBBF24; }
+.severity-badge.low { background: rgba(16,185,129,0.15); color: #34D399; }
 
 .error-type-badge {
   padding: 4px var(--space-3);
@@ -922,20 +886,13 @@ body {
   background: var(--color-danger-soft);
   color: #F87171;
   border: 1px solid rgba(239, 68, 68, 0.2);
+  word-break: break-word;
 }
 
-/* ---- Full-width cards override ---- */
 .result-card-full {
   grid-column: span 2;
 }
 
-@media (max-width: 640px) {
-  .result-card-full {
-    grid-column: 1 / -1;
-  }
-}
-
-/* ---- Summary Card ---- */
 .summary-card {
   background: linear-gradient(135deg, var(--color-bg-card), rgba(34, 197, 94, 0.03));
 }
@@ -946,7 +903,6 @@ body {
   color: var(--color-text);
 }
 
-/* ---- Info Grid ---- */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -981,7 +937,6 @@ body {
 
 .info-value.error { color: #F87171; }
 
-/* ---- Mod Tags ---- */
 .mod-tags {
   display: flex;
   flex-wrap: wrap;
@@ -998,7 +953,6 @@ body {
   border: 1px solid rgba(34, 197, 94, 0.15);
 }
 
-/* ---- Solutions List ---- */
 .solutions-card ol {
   padding-left: var(--space-5);
 }
@@ -1010,7 +964,6 @@ body {
   margin-bottom: var(--space-2);
 }
 
-/* ---- Stack Trace ---- */
 .stack-card pre {
   background: var(--color-bg-input);
   border: 1px solid var(--color-border);
@@ -1024,17 +977,12 @@ body {
   max-height: 280px;
 }
 
-/* ---- Fix Time ---- */
 .fix-time {
   font-family: var(--font-heading);
   font-size: var(--text-5xl) !important;
   font-weight: 700;
   color: var(--color-accent) !important;
 }
-
-/* ================================================================
-   9. HISTORY LIST
-   ================================================================ */
 
 .history-list {
   background: var(--color-bg-card);
@@ -1048,6 +996,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--space-5);
+  gap: var(--space-3);
 }
 
 .history-header h3 {
@@ -1057,6 +1006,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  min-width: 0;
 }
 
 .history-header h3 svg {
@@ -1078,6 +1028,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .refresh-btn svg {
@@ -1096,7 +1047,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ---- Empty/Loading ---- */
 .history-empty {
   text-align: center;
   padding: var(--space-10);
@@ -1120,7 +1070,6 @@ body {
   padding: var(--space-8);
 }
 
-/* ---- Items ---- */
 .history-items {
   display: flex;
   flex-direction: column;
@@ -1136,6 +1085,7 @@ body {
   cursor: pointer;
   transition: all var(--transition-fast);
   border: 1px solid transparent;
+  gap: var(--space-3);
 }
 
 .history-item:hover {
@@ -1192,10 +1142,11 @@ body {
   border-radius: 3px;
   flex-shrink: 0;
 }
+
 .severity-dot.critical { background: var(--color-danger); }
-.severity-dot.high     { background: #F97316; }
-.severity-dot.medium   { background: var(--color-warning); }
-.severity-dot.low      { background: var(--color-success); }
+.severity-dot.high { background: #F97316; }
+.severity-dot.medium { background: var(--color-warning); }
+.severity-dot.low { background: var(--color-success); }
 
 .delete-btn {
   width: 32px;
@@ -1227,10 +1178,6 @@ body {
   background: var(--color-danger-soft);
 }
 
-/* ================================================================
-   10. AUTH MODAL
-   ================================================================ */
-
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1242,6 +1189,7 @@ body {
   justify-content: center;
   z-index: 2000;
   animation: fadeIn var(--transition-normal);
+  padding: var(--space-4);
 }
 
 .modal-card {
@@ -1258,7 +1206,7 @@ body {
 
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(-16px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .modal-close {
@@ -1296,7 +1244,6 @@ body {
   text-align: center;
 }
 
-/* ---- Form ---- */
 .form-group {
   margin-bottom: var(--space-5);
 }
@@ -1377,10 +1324,6 @@ body {
 .modal-switch a:hover {
   text-decoration: underline;
 }
-
-/* ================================================================
-   11. SHARED REPORT PAGE
-   ================================================================ */
 
 .shared-report-page {
   max-width: var(--max-width);
@@ -1518,9 +1461,23 @@ body {
   box-shadow: var(--shadow-glow);
 }
 
-/* ================================================================
-   12. RESPONSIVE
-   ================================================================ */
+@media (max-width: 900px) {
+  .header-top,
+  .app-main,
+  .footer-row,
+  .shared-report-page {
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+
+  .result-card-full {
+    grid-column: 1 / -1;
+  }
+
+  .analysis-result {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 640px) {
   :root {
@@ -1528,16 +1485,27 @@ body {
   }
 
   .app-main {
-    padding: var(--space-6) var(--space-4);
+    padding: var(--space-5) var(--space-4);
   }
 
   .header-top {
-    padding: var(--space-2) var(--space-4);
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .header-content {
+    gap: 4px;
+  }
+
+  .logo {
     gap: var(--space-2);
   }
 
   .logo-text {
     font-size: var(--text-xl);
+    line-height: 1.2;
   }
 
   .logo-icon {
@@ -1552,7 +1520,29 @@ body {
 
   .header-subtitle {
     font-size: 11px;
-    padding-left: 44px;
+    padding-left: 0;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: stretch;
+    gap: var(--space-2);
+  }
+
+  .header-actions .btn,
+  .header-actions .user-badge {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .tab-bar {
+    flex-direction: column;
+  }
+
+  .tab-btn {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
   }
 
   .drop-zone {
@@ -1562,6 +1552,7 @@ body {
   .drop-icon {
     width: 44px;
     height: 44px;
+    margin-bottom: var(--space-4);
   }
 
   .drop-icon svg {
@@ -1569,22 +1560,117 @@ body {
     height: 24px;
   }
 
+  .drop-text {
+    font-size: var(--text-lg);
+    line-height: 1.4;
+  }
+
+  .drop-hint {
+    font-size: var(--text-xs);
+    line-height: 1.6;
+  }
+
+  .file-preview {
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .file-name {
+    font-size: var(--text-sm);
+  }
+
+  .paste-textarea {
+    min-height: 260px;
+    padding: var(--space-3);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .analyze-btn {
+    padding: var(--space-4);
+    font-size: var(--text-sm);
+  }
+
+  .card {
+    padding: var(--space-4);
+  }
+
+  .result-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .result-header-title {
+    font-size: var(--text-2xl);
+  }
+
+  .result-meta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .badge {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .severity-row {
+    gap: var(--space-2);
+  }
+
+  .error-type-badge {
+    width: 100%;
+  }
+
+  .summary-card .card-body,
+  .card-body,
+  .solutions-card li {
+    font-size: var(--text-sm);
+  }
+
   .info-grid {
     grid-template-columns: 1fr;
   }
 
-  .analysis-result {
-    grid-template-columns: 1fr;
+  .stack-card pre {
+    padding: var(--space-3);
+    font-size: 10px;
+    line-height: 1.65;
+  }
+
+  .fix-time {
+    font-size: var(--text-4xl) !important;
+  }
+
+  .history-list {
+    padding: var(--space-4);
+  }
+
+  .history-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .history-item {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .item-left,
+  .item-right {
+    width: 100%;
   }
 
   .item-right {
-    width: 100%;
     justify-content: space-between;
   }
 
@@ -1592,31 +1678,80 @@ body {
     opacity: 1;
   }
 
-  .result-header {
-    flex-direction: column;
-  }
-
   .modal-card {
-    margin: var(--space-4);
-    padding: var(--space-6);
+    margin: 0;
+    padding: var(--space-5);
+    max-width: none;
   }
 
-  .header-actions {
-    gap: 6px;
+  .modal-title {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-5);
   }
 
-  .user-badge {
-    padding: 5px var(--space-2);
-    font-size: var(--text-xs);
-  }
-
-  .btn {
-    padding: 5px var(--space-3);
-    font-size: var(--text-xs);
+  .shared-report-page {
+    padding: var(--space-5) var(--space-4);
   }
 
   .share-banner {
     flex-direction: column;
     align-items: flex-start;
+    font-size: var(--text-sm);
+  }
+
+  .share-expiry {
+    font-size: var(--text-xs);
+  }
+
+  .cta-link {
+    width: 100%;
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .footer-row {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .footer-meta,
+  .footer-beian {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .footer-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .logo-text {
+    font-size: var(--text-lg);
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .header-actions .btn,
+  .header-actions .user-badge {
+    width: 100%;
+  }
+
+  .drop-zone {
+    padding: var(--space-6) var(--space-3);
+  }
+
+  .drop-text {
+    font-size: var(--text-md);
+  }
+
+  .result-header-title {
+    font-size: var(--text-xl);
+  }
+
+  .history-item {
+    padding: var(--space-3) var(--space-2);
   }
 }
