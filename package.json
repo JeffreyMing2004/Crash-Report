@@ -1,0 +1,19 @@
+{
+  "name": "crash-report-analyzer",
+  "version": "1.0.0",
+  "description": "AI-powered Minecraft Crash Report Analyzer",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix \"[{name}]\" --prefix-colors \"blue,cyan\" \"cd server && npm run dev\" \"cd client && npm run dev\"",
+    "dev:backend": "cd server && npm run dev",
+    "dev:frontend": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start"
+  },
+  "keywords": ["minecraft", "crash", "analyzer", "ai"],
+  "author": "明明Uncle",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
