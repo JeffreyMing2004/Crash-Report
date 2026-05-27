@@ -35,6 +35,8 @@ crash-reports/
 │   │   ├── api/index.js    # API 封装
 │   │   └── assets/style.css
 │   └── vite.config.js
+├── scripts/
+│   └── dev-runner.js       # 开发模式统一启动器
 └── README.md
 ```
 
@@ -47,17 +49,17 @@ crash-reports/
 
 ### 1. 安装依赖
 
-```bash
-# 后端
-cd server
-npm install
+在项目根目录执行：
 
-# 前端
-cd ../client
+```bash
 npm install
+cd server && npm install
+cd ../client && npm install
 ```
 
 ### 2. 配置环境变量
+
+在 `server` 目录中复制环境变量模板：
 
 ```bash
 cd server
@@ -96,21 +98,26 @@ AI_MODEL=qwen2.5:7b
 
 **开发模式：**
 
-```bash
-# 终端1 - 后端（http://localhost:3000）
-cd server && npm run dev
+在项目根目录执行：
 
-# 终端2 - 前端（http://localhost:5173）
-cd client && npm run dev
+```bash
+npm run dev
 ```
+
+该命令会同时启动：
+
+- 前端：http://localhost:5173
+- 后端：http://localhost:3000
+
+日志会自动标记来源：
+
+- `[FRONTEND]` 表示前端日志
+- `[BACKEND]` 表示后端日志
 
 **生产模式：**
 
 ```bash
-# 构建前端
 cd client && npm run build
-
-# 启动服务
 cd ../server && NODE_ENV=production npm start
 ```
 
